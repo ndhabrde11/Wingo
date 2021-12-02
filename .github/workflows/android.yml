@@ -5,19 +5,6 @@ on:
     branches: [ master ]
 
 jobs:
-  test:
-    runs-on: ubuntu-latest
-    
-    steps:
-    - uses: actions/checkout@v2
-    - name: set up JDK 11
-      uses: actions/setup-java@v2
-      with:
-         java-version: '11'
-         distribution: 'adopt'
-         cache: gradle
-    - name: Unit tests
-      run: ./gradlew test --stacktrace
     
   build:
     runs-on: ubuntu-latest
@@ -30,6 +17,8 @@ jobs:
         java-version: '11'
         distribution: 'adopt'
         cache: gradle
+    - name: Unit tests
+      run: ./gradlew testDevelopmentUnitTest --stacktrace
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
     - name: Build with Gradle

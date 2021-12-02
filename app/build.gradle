@@ -9,7 +9,7 @@ plugins {
 android {
     signingConfigs {
         debug {
-            storeFile file('C:\\Users\\Nayan\\.android\\debug.keystore')
+            storeFile file('debug.keystore')
             storePassword 'android'
             keyPassword 'android'
             keyAlias 'androiddebugkey'

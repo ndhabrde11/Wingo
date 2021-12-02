@@ -18,7 +18,8 @@ class HomeActivity : AppCompatActivity() {
         binding.apply {
             if(savedInstanceState == null) {
                 supportFragmentManager.commit {
-                    add(R.id.fragmentContainerView, TournamentFragment())
+                    add(R.id.fragmentContainerView,
+                        TournamentFragment())
                 }
             }
         }
