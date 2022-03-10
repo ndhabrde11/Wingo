@@ -1,7 +1,7 @@
 name: Android CI
 
 on:
-  push:
+  pull_request:
     branches: [ master ]
 
 jobs:
@@ -12,30 +12,36 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
       #2
-      - name: Decode Keystore
-        id: decode_keystore
-        uses: timheuer/base64-to-file@v1
-        with:
-          fileName: 'app/wingokey.jks'
-          encodedString: ${{ secrets.RELEASE_KEY_STORE }}
-      #3
-      - name: Generate Release App bundle
+      - name: Build App bundle
         run: ./gradlew bundleRelease
+      - name: Decode Keystore
         env:
-          PRODUCTION_URL: ${{ secrets.PRODUCTION_URL }}
-          API_KEY: ${{ secrets.API_KEY }}
-          KEY_STORE_PASSWORD: ${{ secrets.KEY_STORE_PASSWORD }}
-          KEY_ALIAS_PASSWORD: ${{ secrets.KEY_PASSWORD }}
-          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          ENCODED_STRING: ${{ secrets.RELEASE_KEY_STORE }}
+        run: |
+          TMP_KEYSTORE_FILE_PATH="${GITHUB_WORKSPACE}"/app
+          echo $ENCODED_STRING | base64 -di > "${TMP_KEYSTORE_FILE_PATH}"/wingokey.jks
+      - name: Create service_account.json
+        id: createServiceAccount
+        run: echo '${{ secrets.SERVICE_ACCOUNT }}' > service_account.json
+      #3
+      - uses: r0adkll/sign-android-release@v1
+        name: Sign app APK
+        id: sign_app
+        with:
+          releaseDirectory: app/build/outputs/bundle/release
+          signingKeyBase64: ${{ secrets.RELEASE_KEY_STORE }}
+          alias: ${{ secrets.KEY_ALIAS }}
+          keyStorePassword: ${{ secrets.KEY_STORE_PASSWORD }}
+          keyPassword: ${{ secrets.KEY_PASSWORD }}
 
       - name: Deploy to Play Store
         id: deploy
-        uses: r0adkll/upload-google-play@v1
+        uses: r0adkll/upload-google-play@v1.0.15
         with:
-          serviceAccountJsonPlainText: ${ { secrets.SERVICE_ACCOUNT } }
+          serviceAccountJson: service_account.json
           packageName: com.nayandhabarde.wingo
-          releaseFile: app/build/outputs/bundle/release/app-release.aab
+          releaseFile: ${{steps.sign_app.outputs.signedReleaseFile}}
           track: production
-          whatsNewDirectory: whatsnew/
+          whatsNewDirectory: production
 
 

@@ -15,7 +15,7 @@ class WingoDateTimeFormatterTest {
 
     @Test
     fun `test format to month and date of month returns correct`() {
-        val output = wingoDateTimeFormatter.formatToMonthDateOfMonth("2021-07-10T06:31:30Z")
+        val output = wingoDateTimeFormatter.formatToMonthDateOfMonth("2021-07-10T06:31:20Z")
         assertThat(output).isEqualTo("Jul 10")
     }
 

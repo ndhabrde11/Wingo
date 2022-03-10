@@ -7,20 +7,6 @@ plugins {
 }
 
 android {
-    signingConfigs {
-        debug {
-            storeFile file('debug.keystore')
-            storePassword 'android'
-            keyPassword 'android'
-            keyAlias 'androiddebugkey'
-        }
-        release {
-            storeFile file("wingokey.jks")
-            storePassword System.getenv("KEY_STORE_PASSWORD")
-            keyPassword System.getenv("KEY_ALIAS_PASSWORD")
-            keyAlias System.getenv("KEY_ALIAS")
-        }
-    }
     compileSdk 30
     buildToolsVersion "30.0.3"
 
@@ -28,8 +14,8 @@ android {
         applicationId "com.nayandhabarde.wingo"
         minSdk 21
         targetSdk 30
-        versionCode 2
-        versionName "1.1"
+        versionCode 3
+        versionName "1.2"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -40,7 +26,6 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             buildConfigField "String", "BASE_URL", "\"${System.getenv("PRODUCTION_URL")}\""
             buildConfigField "String", "AUTH_TOKEN", "\"Bearer ${System.getenv("API_KEY")}\""
-            signingConfig signingConfigs.release
         }
         development {
             minifyEnabled false
